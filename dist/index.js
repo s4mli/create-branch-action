@@ -4,6 +4,7 @@
 /***/ 3978:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+const core = __nccwpck_require__(5248);
 const github = __nccwpck_require__(2912);
 
 module.exports = async (context, branch, sha) => {
@@ -11,8 +12,10 @@ module.exports = async (context, branch, sha) => {
   const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
   try {
     const r = await octokit.rest.repos.getBranch({ ...context.repo, branch });
+    core.info(`${r?.data?.name} exists, SHA: ${r?.data?.commit?.sha}`);
     if (branch === r?.data?.name) return false;
   } catch (error) {
+    core.info(`${error.status}: ${error.response?.data?.message}`);
     if (404 === error.status && "HttpError" === error.name) {
       try {
         const r = await octokit.rest.git.createRef({
@@ -20,6 +23,7 @@ module.exports = async (context, branch, sha) => {
           sha: sha || context.sha,
           ref,
         });
+        core.info(`${r?.data?.ref} created, SHA: ${r?.data?.object?.sha}`);
         return ref === r?.data?.ref;
       } catch (err) {
         throw err;
