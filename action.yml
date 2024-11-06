@@ -1,0 +1,15 @@
+name: "Create Branch"
+description: "Create a branch"
+inputs:
+  branch:
+    description: "Brnach name."
+    required: true
+  sha:
+    description: "SHA."
+    required: false
+outputs:
+  created:
+    description: "String value, 'false': branch exists, 'true': branch created."
+runs:
+  using: "node20"
+  main: "dist/index.js"
